@@ -37,13 +37,14 @@ st.set_page_config(
 )
 
 # Show Stripe result messages from query params
-query_params = st.experimental_get_query_params()
-status = query_params.get("status", [None])[0]
-restored_user = query_params.get("user", [None])[0]
+query_params = st.query_params
+status = query_params.get("status", None)
+restored_user = query_params.get("user", None)
+
 
 if status == "success":
     st.success("🎉 Payment successful! Thank you.")
-    st.experimental_set_query_params()  # Clear the URL after success
+    st.query_params.clear()
     st.session_state['menu'] = "Dashboard"
     if "user" not in st.session_state and restored_user:
         users = load_db(USER_DB)
