@@ -66,7 +66,7 @@ st.markdown("""
 }
 
         .task-card {
-            background: #1e1e2f;
+            background: #f0f0f0;
             border: 1px solid #333;
             border-radius: 10px;
             padding: 1rem;
