@@ -1,4 +1,4 @@
-import streamlit as st 
+import streamlit as st
 from models.user import User
 from models.task import Task
 from models.bid import Bid
@@ -21,6 +21,7 @@ def load_db(path):
         with open(path, 'r') as f:
             return json.load(f)
     except json.JSONDecodeError:
+        # Corrupted or malformed JSON, reset file
         with open(path, 'w') as f:
             json.dump([], f)
         return []
@@ -30,60 +31,170 @@ def save_db(path, data):
         json.dump(data, f, indent=2)
 
 # ----- 💅 Custom Styling -----
-st.set_page_config(page_title="TaskBid", layout="wide")
+st.set_page_config(page_title="TaskBid", layout="wide", page_icon="🚀")
 
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-        /* Entire app background */
-        .appview-container .main {
+        /* Base app background and font */
+        .appview-container .main, .block-container {
             background-color: #000000 !important;
-        }
-
-        /* Main content area */
-        .block-container {
-            background-color: #000000 !important;
-            color: #ffffff;
-            font-family: 'Poppins', sans-serif;
+            color: #f0f0f5 !important;
+            font-family: 'Poppins', sans-serif !important;
+            padding: 2rem 3rem !important;
         }
 
         /* Sidebar */
         section[data-testid="stSidebar"] {
-            background-color: #111111 !important;
+            background-color: #1a001a !important;
+            color: #ddd !important;
+            padding: 1rem 1.5rem !important;
+            font-weight: 500;
+            letter-spacing: 0.04em;
         }
 
-        /* Inputs */
-        .stTextInput > div > div > input,
-        .stTextArea textarea {
-            background-color: #1a1a1a !important;
+        /* Sidebar Menu */
+        .css-1d391kg .css-1v0mbdj {
+            background-color: transparent !important;
+            color: #d1c4e9 !important;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .css-1d391kg .css-1v0mbdj:focus, 
+        .css-1d391kg .css-1v0mbdj:hover {
+            background-color: #4B0082 !important;
             color: white !important;
             border-radius: 8px;
         }
 
         /* Buttons */
         .stButton > button {
-            background-color: #4B0082 !important;
+            background: linear-gradient(90deg, #4B0082, #A64AC9);
             color: white !important;
-            font-weight: 600;
-            border-radius: 8px;
-            padding: 0.6rem 1.4rem;
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 0.7rem 1.5rem;
             border: none;
+            transition: background 0.3s ease;
+            box-shadow: 0 4px 10px rgba(166, 74, 201, 0.6);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .stButton > button:hover {
+            background: linear-gradient(90deg, #6a2ea9, #c083ff);
+            box-shadow: 0 6px 14px rgba(198, 109, 230, 0.9);
         }
 
-        /* Expander content */
-        .stExpanderContent {
-            background-color: #1a1a1a !important;
-            color: white !important;
+        /* Inputs */
+        .stTextInput > div > div > input,
+        .stTextArea textarea {
+            background-color: #1f1f2e !important;
+            color: #ddd !important;
+            border-radius: 12px !important;
+            border: 1.5px solid #4B0082 !important;
+            padding: 0.8rem 1rem !important;
+            font-size: 1rem !important;
+            font-weight: 500 !important;
+            transition: border-color 0.3s ease;
+        }
+        .stTextInput > div > div > input:focus,
+        .stTextArea textarea:focus {
+            border-color: #a64ac9 !important;
+            outline: none !important;
         }
 
         /* Task card styling */
         .task-card {
-            background-color: #1c1c1c;
-            padding: 1.2rem;
-            margin-bottom: 1rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(75, 0, 130, 0.3);
+            background: linear-gradient(145deg, #1a001a, #2c0031);
+            padding: 1.6rem 2rem;
+            margin-bottom: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(166, 74, 201, 0.4);
+            border: 1px solid #4B0082;
+            transition: transform 0.3s ease;
+        }
+        .task-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(198, 109, 230, 0.8);
+        }
+        .task-card h4 {
+            font-weight: 700;
+            color: #d1c4e9;
+            margin-bottom: 0.5rem;
+        }
+        .task-card p {
+            font-weight: 400;
+            font-size: 1rem;
+            margin-bottom: 0.6rem;
+            color: #ccc;
+        }
+        .task-card small {
+            font-weight: 600;
+            color: #a584cc;
+        }
+
+        /* Bid info box */
+        .stInfo {
+            background-color: #3b0066 !important;
+            border-left: 5px solid #a64ac9 !important;
+            color: #f4e6ff !important;
+            font-weight: 600 !important;
+            padding: 0.8rem 1.2rem !important;
+            border-radius: 8px !important;
+            margin-bottom: 0.8rem !important;
+        }
+
+        /* Expander style */
+        .stExpander > button {
+            background-color: #4B0082 !important;
+            color: white !important;
+            font-weight: 600 !important;
+            border-radius: 12px !important;
+            padding: 0.8rem 1rem !important;
+            width: 100% !important;
+            text-align: left !important;
+            font-size: 1.1rem !important;
+            margin-bottom: 0.6rem !important;
+            box-shadow: 0 6px 18px rgba(166, 74, 201, 0.5);
+            transition: background-color 0.3s ease;
+        }
+        .stExpander > button:hover {
+            background-color: #7a4bcc !important;
+        }
+
+        /* Links and highlights */
+        a, a:hover {
+            color: #b39ddb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Headers */
+        h1, h2, h3, h4 {
+            color: #d1c4e9;
+            font-weight: 700;
+        }
+        h3 {
+            border-bottom: 2px solid #a64ac9;
+            padding-bottom: 0.3rem;
+            margin-bottom: 1.2rem;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a001a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4B0082;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a64ac9;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -138,10 +249,8 @@ elif choice == "Dashboard":
         st.markdown("### ➕ Post a New Task")
         title = st.text_input("📝 Task Title")
         desc = st.text_area("🧾 Description")
-        price = st.number_input("💲 Price", min_value=5.0, step=1.0)
-
         if st.button("📤 Post Task"):
-            new_task = Task(title, desc, user['username'], price)
+            new_task = Task(title, desc, user['username'])
             tasks.append(new_task.to_dict())
             save_db(TASK_DB, tasks)
             st.success("✅ Task Posted!")
@@ -163,3 +272,4 @@ elif choice == "Dashboard":
         my_bids = [b for b in bids if b['seller'] == user['username']]
         for b in my_bids:
             st.markdown(f"- **Task:** {b['task']} | 💬 **Message:** {b['message']}")
+
