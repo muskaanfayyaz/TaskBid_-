@@ -125,8 +125,8 @@ st.markdown("""
 
 **TaskBid** is a micro task marketplace where users can **buy or sell simple tasks** — like editing a video, fixing a bug, or designing a logo — all for **$10 per gig**.
 
-- ✅ Buyers pay $10 per task.
-- 💰 Sellers receive $9 after a $1 platform fee is deducted.
+- ✅ Buyers pay `$10` per task.
+- 💰 Sellers receive `$9` after a `$1` platform fee is deducted.
 - 🚀 Simple. Fast. Efficient.
 """)
 
