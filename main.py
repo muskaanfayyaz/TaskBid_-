@@ -57,13 +57,14 @@ st.markdown("""
             background: linear-gradient(90deg, #ba68c8, #7e57c2);
         }
         input, textarea {
-            background-color: #1f1f1f !important;
-            color: #fff !important;
-            border: 1px solid #555 !important;
-            border-radius: 8px !important;
-            padding: 0.5rem !important;
-            font-size: 1rem !important;
-        }
+    background-color: #f0f0f0 !important; /* Light background */
+    color: #000 !important;              /* Dark text */
+    border: 1px solid #ccc !important;
+    border-radius: 8px !important;
+    padding: 0.5rem !important;
+    font-size: 1rem !important;
+}
+
         .task-card {
             background: #1e1e2f;
             border: 1px solid #333;
