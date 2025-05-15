@@ -75,7 +75,8 @@ st.markdown("""
         .stButton>button:hover {
             background: linear-gradient(90deg, #ba68c8, #7e57c2);
         }
-        input, textarea {
+        div[data-baseweb="textarea"] textarea,
+        div[data-baseweb="input"] input {
             background-color: #f0f0f0 !important;
             color: #000 !important;
             border: 1px solid #ccc !important;
@@ -83,6 +84,7 @@ st.markdown("""
             padding: 0.5rem !important;
             font-size: 1rem !important;
         }
+
         .task-card {
             background: #f0f0f0;
             border: 1px solid #333;
@@ -106,16 +108,22 @@ st.markdown("""
 st.image("static/logo.png", width=150)
 st.title("🚀 Welcome to TaskBid — Micro Task Platform")
 st.markdown("""
-> **TaskBid** is a micro task marketplace where users can **buy or sell simple tasks** — like editing a video, fixing a bug, or designing a logo — all for **$10 per gig**.  
-> 🎯 As a platform, we take **$1 as a service fee**, and sellers receive **$9 per completed task**.
+### 💡 What is TaskBid?
+
+**TaskBid** is a micro task marketplace where users can **buy or sell simple tasks** — like editing a video, fixing a bug, or designing a logo — all for **$10 per gig**.
+
+- ✅ Buyers pay $10 per task.
+- 💰 Sellers receive **$9** after a **$1 platform fee** is deducted.
+- 🚀 Simple. Fast. Efficient.
 """)
+
 
 
 if "user" not in st.session_state:
     st.session_state.user = None
 
 menu = ["Login", "Signup"] if not st.session_state.user else ["Dashboard", "Logout"]
-choice = st.sidebar.selectbox("📋 Menu", menu)
+choice = st.sidebar.selectbox("📋 Menu", menu, key="sidebar_menu")
 
 if choice == "Login":
     login(USER_DB)
