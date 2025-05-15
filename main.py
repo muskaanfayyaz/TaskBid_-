@@ -41,6 +41,15 @@ query_params = st.query_params
 status = query_params.get("status", None)
 restored_user = query_params.get("user", None)
 
+if "user" not in st.session_state:
+    st.session_state.user = None
+
+# Restore session if possible
+if st.session_state.user is None and restored_user:
+    users = load_db(USER_DB)
+    matching_user = next((u for u in users if u['username'] == restored_user), None)
+    if matching_user:
+        st.session_state.user = matching_user
 
 if status == "success":
     st.success("🎉 Payment successful! Thank you.")
@@ -57,11 +66,8 @@ if status == "success":
 
     st.query_params.clear()
     st.session_state['menu'] = "Dashboard"
-    if "user" not in st.session_state and restored_user:
-        users = load_db(USER_DB)
-        matching_user = next((u for u in users if u['username'] == restored_user), None)
-        if matching_user:
-            st.session_state.user = matching_user
+    st.experimental_rerun()
+
 elif status == "cancel":
     st.warning("⚠️ Payment was canceled or failed.")
 
@@ -96,7 +102,6 @@ st.markdown("""
             padding: 0.5rem !important;
             font-size: 1rem !important;
         }
-
         .task-card {
             background: #f0f0f0;
             border: 1px solid #333;
@@ -129,11 +134,6 @@ st.markdown("""
 - 🚀 Simple. Fast. Efficient.
 """)
 
-
-
-if "user" not in st.session_state:
-    st.session_state.user = None
-
 menu = ["Login", "Signup"] if not st.session_state.user else ["Dashboard", "Logout"]
 choice = st.sidebar.selectbox("📋 Menu", menu, key="sidebar_menu")
 
@@ -145,7 +145,7 @@ elif choice == "Signup":
 
 elif choice == "Logout":
     st.session_state.user = None
-    st.success("🔒 Logged out successfully.")
+    st.success("🔐 Logged out successfully.")
 
 elif choice == "Dashboard":
     user = st.session_state.user
@@ -157,7 +157,7 @@ elif choice == "Dashboard":
     st.markdown("## 🎯 Post or View Tasks")
     with st.expander("➕ Post a Task"):
         title = st.text_input("📝 Task Title", key="task_title")
-        desc = st.text_area("🧾 Description", key="task_desc")
+        desc = st.text_area("🧒️ Description", key="task_desc")
         price = st.number_input("💲 Price (Max $10)", min_value=1, max_value=10, value=5, key="task_price")
         if st.button("📤 Post Task", key="post_task_btn"):
             if price > 10:
@@ -167,6 +167,7 @@ elif choice == "Dashboard":
                 tasks.append(new_task.to_dict())
                 save_db(TASK_DB, tasks)
                 st.success("✅ Task Posted!")
+                st.experimental_rerun()
             else:
                 st.warning("⚠️ A task with this title already exists.")
 
@@ -174,7 +175,7 @@ elif choice == "Dashboard":
     open_tasks = [t for t in tasks if t['status'] == 'open' and t['buyer'] != user['username']]
     for i, t in enumerate(open_tasks):
         with st.expander(f"💼 {t['title']} — ${t['price']} (Seller_earns_${t['price'] - 1})"):
-            st.markdown(f"🧾 {t['description']}")
+            st.markdown(f"🧒️ {t['description']}")
             key_msg = f"bid_msg_{i}_{t['title']}"
             key_btn = f"bid_btn_{i}_{t['title']}"
             msg = st.text_input("✏️ Your Bid Message", key=key_msg)
@@ -184,6 +185,7 @@ elif choice == "Dashboard":
                     bids.append(new_bid.to_dict())
                     save_db(BID_DB, bids)
                     st.success("🚀 Bid Submitted!")
+                    st.experimental_rerun()
                 else:
                     st.warning("❌ You've already submitted a bid for this task.")
 
@@ -207,8 +209,8 @@ elif choice == "Dashboard":
                         t['assigned_to'] = b['seller']
                         save_db(TASK_DB, tasks)
                         st.success(f"🎉 Bid Accepted! {b['seller']} can now work on the task.")
+                        st.experimental_rerun()
 
-        # New block: Show Pay button after seller completes and buyer must pay
         if t.get('assigned_to') and t['status'] == 'pending_payment':
             st.info(f"✅ {t['assigned_to']} has completed this task. Please proceed with payment.")
             if st.button("💳 Pay with Stripe", key=f"pay_after_{t['title']}"):
@@ -231,13 +233,14 @@ elif choice == "Dashboard":
     my_bids = [b for b in bids if b['seller'] == user['username']]
     for b in my_bids:
         st.markdown(f"- **Task:** {b['task']} | 💬 **Message:** {b['message']}")
+
     st.markdown("## 📌 Assigned Tasks To You")
     assigned_to_me = [t for t in tasks if t.get('assigned_to') == user['username'] and t['status'] != 'completed']
-
     for t in assigned_to_me:
-        st.markdown(f"### 🧾 {t['title']} — ${t['price']}")
+        st.markdown(f"### 🧒️ {t['title']} — ${t['price']}")
         st.write(t['description'])
         if st.button("✅ Mark as Completed", key=f"complete_{t['title']}"):
             t['status'] = 'pending_payment'
             save_db(TASK_DB, tasks)
             st.success("🎯 Task marked as completed. Awaiting buyer payment.")
+            st.experimental_rerun()
