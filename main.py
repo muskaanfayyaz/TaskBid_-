@@ -39,8 +39,17 @@ st.set_page_config(
 # Show Stripe result messages from query params
 query_params = st.experimental_get_query_params()
 status = query_params.get("status", [None])[0]
+restored_user = query_params.get("user", [None])[0]
+
 if status == "success":
     st.success("🎉 Payment successful! Thank you.")
+    st.experimental_set_query_params()  # Clear the URL after success
+    st.session_state['menu'] = "Dashboard"
+    if "user" not in st.session_state and restored_user:
+        users = load_db(USER_DB)
+        matching_user = next((u for u in users if u['username'] == restored_user), None)
+        if matching_user:
+            st.session_state.user = matching_user
 elif status == "cancel":
     st.warning("⚠️ Payment was canceled or failed.")
 
@@ -93,9 +102,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Content
+# Logo & Title
 st.image("static/logo.png", width=150)
 st.title("🚀 Welcome to TaskBid — Micro Task Platform")
+st.markdown("""
+> **TaskBid** is a micro task marketplace where users can **buy or sell simple tasks** — like editing a video, fixing a bug, or designing a logo — all for **$10 per gig**.  
+> 🎯 As a platform, we take **$1 as a service fee**, and sellers receive **$9 per completed task**.
+""")
+
 
 if "user" not in st.session_state:
     st.session_state.user = None
@@ -139,7 +153,7 @@ elif choice == "Dashboard":
     st.markdown("## 🔎 Available Tasks to Bid")
     open_tasks = [t for t in tasks if t['status'] == 'open' and t['buyer'] != user['username']]
     for i, t in enumerate(open_tasks):
-        with st.expander(f"💼 {t['title']} — ${t['price']}"):
+        with st.expander(f"💼 {t['title']} — ${t['price']} (Seller earns ${t['price'] - 1})"):
             st.markdown(f"🧾 {t['description']}")
             key_msg = f"bid_msg_{i}_{t['title']}"
             key_btn = f"bid_btn_{i}_{t['title']}"
@@ -158,7 +172,7 @@ elif choice == "Dashboard":
     for t in user_tasks:
         st.markdown(f"""
             <div class='task-card'>
-                <h4>{t['title']} — ${t['price']}</h4>
+                <h4>{t['title']} — ${t['price']} (Seller receives ${t['price'] - 1})</h4>
                 <p>{t['description']}</p>
                 <small>Status: <b>{t['status'].capitalize()}</b></small>
         """, unsafe_allow_html=True)
@@ -176,7 +190,7 @@ elif choice == "Dashboard":
                 with col2:
                     if st.button(f"💳 Pay with Stripe", key=f"pay_{t['title']}_{b['seller']}"):
                         try:
-                            success_url = "https://mf-taskb.streamlit.app/?status=success"
+                            success_url = f"https://mf-taskb.streamlit.app/?status=success&user={user['username']}"
                             cancel_url = "https://mf-taskb.streamlit.app/?status=cancel"
                             session_url = create_checkout_session(
                                 task_title=t['title'],
@@ -185,7 +199,7 @@ elif choice == "Dashboard":
                                 cancel_url=cancel_url
                             )
                             st.success("✅ Stripe session created successfully!")
-                            st.markdown(f"[🔗 Pay Now]({session_url})", unsafe_allow_html=True)
+                            st.markdown(f"""<a href="{session_url}" target="_blank"><button>💳 Pay Now</button></a>""", unsafe_allow_html=True)
                         except Exception as e:
                             st.error(f"❌ Failed to create Stripe session: {str(e)}")
 

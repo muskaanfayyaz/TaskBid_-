@@ -10,7 +10,7 @@
     "title": "Design a card",
     "description": "Use bright colors, brand name: Core",
     "buyer": "Muskaan",
-    "price": 9,
+    "price": 10,
     "status": "assigned"
   },
   {
@@ -24,14 +24,14 @@
     "title": "Write Instagram captions",
     "description": "10 catchy captions for a fashion brand",
     "buyer": "alice",
-    "price": 8,
+    "price": 10,
     "status": "open"
   },
   {
     "title": "Create a social media post",
     "description": "Simple graphic for Facebook announcement",
     "buyer": "diana",
-    "price": 7,
+    "price": 10,
     "status": "open"
   },
   {
@@ -45,14 +45,14 @@
     "title": "Proofread a short article",
     "description": "Correct grammar in a 500-word blog post",
     "buyer": "alice",
-    "price": 6,
+    "price": 10,
     "status": "open"
   },
   {
     "title": "Translate product labels",
     "description": "Translate 20 short labels to Spanish",
     "buyer": "diana",
-    "price": 9,
+    "price": 10,
     "status": "open"
   }
 ]
