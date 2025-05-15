@@ -44,6 +44,9 @@ restored_user = query_params.get("user", None)
 if "user" not in st.session_state:
     st.session_state.user = None
 
+if "menu" not in st.session_state:
+    st.session_state.menu = None
+
 # Restore session if possible
 if st.session_state.user is None and restored_user:
     users = load_db(USER_DB)
@@ -54,7 +57,6 @@ if st.session_state.user is None and restored_user:
 if status == "success":
     st.success("🎉 Payment successful! Thank you.")
 
-    # ✅ Mark task as completed
     tasks = load_db(TASK_DB)
     task_title = query_params.get("task", None)
     if task_title:
@@ -65,8 +67,8 @@ if status == "success":
                 st.success("✅ Task marked as completed and paid!")
 
     st.query_params.clear()
-    st.session_state['menu'] = "Dashboard"
-    st.experimental_rerun()
+    st.session_state.menu = "Dashboard"
+    st.rerun()
 
 elif status == "cancel":
     st.warning("⚠️ Payment was canceled or failed.")
@@ -167,7 +169,7 @@ elif choice == "Dashboard":
                 tasks.append(new_task.to_dict())
                 save_db(TASK_DB, tasks)
                 st.success("✅ Task Posted!")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.warning("⚠️ A task with this title already exists.")
 
@@ -185,7 +187,7 @@ elif choice == "Dashboard":
                     bids.append(new_bid.to_dict())
                     save_db(BID_DB, bids)
                     st.success("🚀 Bid Submitted!")
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.warning("❌ You've already submitted a bid for this task.")
 
@@ -209,7 +211,7 @@ elif choice == "Dashboard":
                         t['assigned_to'] = b['seller']
                         save_db(TASK_DB, tasks)
                         st.success(f"🎉 Bid Accepted! {b['seller']} can now work on the task.")
-                        st.experimental_rerun()
+                        st.rerun()
 
         if t.get('assigned_to') and t['status'] == 'pending_payment':
             st.info(f"✅ {t['assigned_to']} has completed this task. Please proceed with payment.")
@@ -243,4 +245,4 @@ elif choice == "Dashboard":
             t['status'] = 'pending_payment'
             save_db(TASK_DB, tasks)
             st.success("🎯 Task marked as completed. Awaiting buyer payment.")
-            st.experimental_rerun()
+            st.rerun()
