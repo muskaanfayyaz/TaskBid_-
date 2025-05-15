@@ -10,5 +10,35 @@
     "email": "test@gmail.com",
     "role": "seller",
     "password": "test123"
+  },
+  {
+    "username": "alice",
+    "email": "alice@example.com",
+    "role": "buyer",
+    "password": "alicepass"
+  },
+  {
+    "username": "bob",
+    "email": "bob@example.com",
+    "role": "seller",
+    "password": "bobpass"
+  },
+  {
+    "username": "charlie",
+    "email": "charlie@example.com",
+    "role": "seller",
+    "password": "charliepass"
+  },
+  {
+    "username": "diana",
+    "email": "diana@example.com",
+    "role": "buyer",
+    "password": "dianapass"
+  },
+  {
+    "username": "eve",
+    "email": "eve@example.com",
+    "role": "seller",
+    "password": "evepass"
   }
 ]

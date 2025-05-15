@@ -36,6 +36,14 @@ st.set_page_config(
     page_icon="🚀"
 )
 
+# Show Stripe result messages from query params
+query_params = st.experimental_get_query_params()
+status = query_params.get("status", [None])[0]
+if status == "success":
+    st.success("🎉 Payment successful! Thank you.")
+elif status == "cancel":
+    st.warning("⚠️ Payment was canceled or failed.")
+
 # Styling
 st.markdown("""
     <style>
@@ -116,9 +124,11 @@ elif choice == "Dashboard":
     with st.expander("➕ Post a Task"):
         title = st.text_input("📝 Task Title", key="task_title")
         desc = st.text_area("🧾 Description", key="task_desc")
-        price = st.number_input("💲 Price", min_value=1, value=10, key="task_price")
+        price = st.number_input("💲 Price (Max $10)", min_value=1, max_value=10, value=5, key="task_price")
         if st.button("📤 Post Task", key="post_task_btn"):
-            if not any(t['title'] == title for t in tasks):
+            if price > 10:
+                st.warning("❌ Task price must not exceed $10.")
+            elif not any(t['title'] == title for t in tasks):
                 new_task = Task(title, desc, user['username'], price)
                 tasks.append(new_task.to_dict())
                 save_db(TASK_DB, tasks)
@@ -166,8 +176,8 @@ elif choice == "Dashboard":
                 with col2:
                     if st.button(f"💳 Pay with Stripe", key=f"pay_{t['title']}_{b['seller']}"):
                         try:
-                            success_url = "https://mf-taskb.streamlit.app/success"
-                            cancel_url = "https://mf-taskb.streamlit.app/cancel"
+                            success_url = "https://mf-taskb.streamlit.app/?status=success"
+                            cancel_url = "https://mf-taskb.streamlit.app/?status=cancel"
                             session_url = create_checkout_session(
                                 task_title=t['title'],
                                 amount=t['price'],

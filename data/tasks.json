@@ -1,23 +1,58 @@
 [
   {
     "title": "Design a logo",
-    "description": "use bright colors brand name taste heaven",
+    "description": "Use bright colors, brand name: Taste Heaven",
     "buyer": "Muskaan",
     "price": 10,
     "status": "assigned"
   },
   {
     "title": "Design a card",
-    "description": "use bright colors brand name core",
+    "description": "Use bright colors, brand name: Core",
     "buyer": "Muskaan",
-    "price": 11,
+    "price": 9,
     "status": "assigned"
   },
   {
-    "title": "generate a ecommerce website",
-    "description": "rent a car websit",
+    "title": "Generate a homepage",
+    "description": "Landing page for car rental website",
     "buyer": "test",
-    "price": 15,
+    "price": 10,
+    "status": "open"
+  },
+  {
+    "title": "Write Instagram captions",
+    "description": "10 catchy captions for a fashion brand",
+    "buyer": "alice",
+    "price": 8,
+    "status": "open"
+  },
+  {
+    "title": "Create a social media post",
+    "description": "Simple graphic for Facebook announcement",
+    "buyer": "diana",
+    "price": 7,
+    "status": "open"
+  },
+  {
+    "title": "Fix HTML layout issue",
+    "description": "Footer overlaps with content on mobile",
+    "buyer": "Muskaan",
+    "price": 10,
+    "status": "open"
+  },
+  {
+    "title": "Proofread a short article",
+    "description": "Correct grammar in a 500-word blog post",
+    "buyer": "alice",
+    "price": 6,
+    "status": "open"
+  },
+  {
+    "title": "Translate product labels",
+    "description": "Translate 20 short labels to Spanish",
+    "buyer": "diana",
+    "price": 9,
     "status": "open"
   }
 ]

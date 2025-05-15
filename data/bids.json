@@ -2,11 +2,41 @@
   {
     "task": "Design a logo",
     "seller": "test",
-    "message": "11"
+    "message": "I can deliver a high-quality logo quickly."
   },
   {
     "task": "Design a card",
     "seller": "test",
-    "message": "11"
+    "message": "I specialize in colorful, elegant designs."
+  },
+  {
+    "task": "Generate a homepage",
+    "seller": "charlie",
+    "message": "I'll create a modern and mobile-friendly layout."
+  },
+  {
+    "task": "Write Instagram captions",
+    "seller": "bob",
+    "message": "Creative and catchy captions are my forte."
+  },
+  {
+    "task": "Create a social media post",
+    "seller": "eve",
+    "message": "I can design a clean, engaging graphic."
+  },
+  {
+    "task": "Fix HTML layout issue",
+    "seller": "charlie",
+    "message": "I'll fix it responsively for all screen sizes."
+  },
+  {
+    "task": "Proofread a short article",
+    "seller": "bob",
+    "message": "I'm great at catching small grammar issues."
+  },
+  {
+    "task": "Translate product labels",
+    "seller": "eve",
+    "message": "Fluent in Spanish, I can do this quickly."
   }
 ]
