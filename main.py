@@ -86,7 +86,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Content
-st.image("static/logo.png", width=150)
+st.image("static/logo.png", width=120)
 st.title("🚀 Welcome to TaskBid — Micro Task Platform")
 
 if "user" not in st.session_state:
