@@ -32,7 +32,7 @@
     "description": "Simple graphic for Facebook announcement",
     "buyer": "diana",
     "price": 10,
-    "status": "open"
+    "status": "assigned"
   },
   {
     "title": "Fix HTML layout issue",

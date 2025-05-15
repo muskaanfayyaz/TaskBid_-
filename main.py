@@ -113,8 +113,8 @@ st.markdown("""
 
 **TaskBid** is a micro task marketplace where users can **buy or sell simple tasks** — like editing a video, fixing a bug, or designing a logo — all for **$10 per gig**.
 
-- ✅ Buyers pay $10 per task.
-- 💰 Sellers receive **$9** after a **$1 platform fee** is deducted.
+- ✅ Buyers pay `$10` per task.
+- 💰 Sellers receive `$9` after a `$1` platform fee is deducted.
 - 🚀 Simple. Fast. Efficient.
 """)
 
@@ -162,7 +162,7 @@ elif choice == "Dashboard":
     st.markdown("## 🔎 Available Tasks to Bid")
     open_tasks = [t for t in tasks if t['status'] == 'open' and t['buyer'] != user['username']]
     for i, t in enumerate(open_tasks):
-        with st.expander(f"💼 {t['title']} — ${t['price']} (Seller earns ${t['price'] - 1})"):
+        with st.expander(f"💼 {t['title']} — ${t['price']} (Seller_earns_${t['price'] - 1})"):
             st.markdown(f"🧾 {t['description']}")
             key_msg = f"bid_msg_{i}_{t['title']}"
             key_btn = f"bid_btn_{i}_{t['title']}"
