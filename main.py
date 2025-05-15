@@ -44,6 +44,17 @@ restored_user = query_params.get("user", None)
 
 if status == "success":
     st.success("🎉 Payment successful! Thank you.")
+
+    # ✅ Mark task as completed
+    tasks = load_db(TASK_DB)
+    task_title = query_params.get("task", None)
+    if task_title:
+        for t in tasks:
+            if t['title'] == task_title and t['buyer'] == restored_user:
+                t['status'] = 'completed'
+                save_db(TASK_DB, tasks)
+                st.success("✅ Task marked as completed and paid!")
+
     st.query_params.clear()
     st.session_state['menu'] = "Dashboard"
     if "user" not in st.session_state and restored_user:
@@ -193,24 +204,26 @@ elif choice == "Dashboard":
                 col1, col2 = st.columns(2)
                 with col1:
                     if st.button(f"✅ Accept Bid from {b['seller']}", key=f"accept_{t['title']}_{b['seller']}"):
-                        t['status'] = 'assigned'
+                        t['assigned_to'] = b['seller']
                         save_db(TASK_DB, tasks)
-                        st.success("🎉 Bid Accepted! Task Assigned.")
-                with col2:
-                    if st.button(f"💳 Pay with Stripe", key=f"pay_{t['title']}_{b['seller']}"):
-                        try:
-                            success_url = f"https://mf-taskb.streamlit.app/?status=success&user={user['username']}"
-                            cancel_url = "https://mf-taskb.streamlit.app/?status=cancel"
-                            session_url = create_checkout_session(
-                                task_title=t['title'],
-                                amount=t['price'],
-                                success_url=success_url,
-                                cancel_url=cancel_url
-                            )
-                            st.success("✅ Stripe session created successfully!")
-                            st.markdown(f"""<a href="{session_url}" target="_blank"><button>💳 Pay Now</button></a>""", unsafe_allow_html=True)
-                        except Exception as e:
-                            st.error(f"❌ Failed to create Stripe session: {str(e)}")
+                        st.success(f"🎉 Bid Accepted! {b['seller']} can now work on the task.")
+
+        # New block: Show Pay button after seller completes and buyer must pay
+        if t.get('assigned_to') and t['status'] == 'pending_payment':
+            st.info(f"✅ {t['assigned_to']} has completed this task. Please proceed with payment.")
+            if st.button("💳 Pay with Stripe", key=f"pay_after_{t['title']}"):
+                try:
+                    success_url = f"https://mf-taskb.streamlit.app/?status=success&user={user['username']}&task={t['title']}"
+                    cancel_url = "https://mf-taskb.streamlit.app/?status=cancel"
+                    session_url = create_checkout_session(
+                        task_title=t['title'],
+                        amount=t['price'],
+                        success_url=success_url,
+                        cancel_url=cancel_url
+                    )
+                    st.markdown(f"""<a href="{session_url}" target="_blank"><button>💳 Pay Now</button></a>""", unsafe_allow_html=True)
+                except Exception as e:
+                    st.error(f"❌ Failed to create Stripe session: {str(e)}")
 
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -218,3 +231,13 @@ elif choice == "Dashboard":
     my_bids = [b for b in bids if b['seller'] == user['username']]
     for b in my_bids:
         st.markdown(f"- **Task:** {b['task']} | 💬 **Message:** {b['message']}")
+    st.markdown("## 📌 Assigned Tasks To You")
+    assigned_to_me = [t for t in tasks if t.get('assigned_to') == user['username'] and t['status'] != 'completed']
+
+    for t in assigned_to_me:
+        st.markdown(f"### 🧾 {t['title']} — ${t['price']}")
+        st.write(t['description'])
+        if st.button("✅ Mark as Completed", key=f"complete_{t['title']}"):
+            t['status'] = 'pending_payment'
+            save_db(TASK_DB, tasks)
+            st.success("🎯 Task marked as completed. Awaiting buyer payment.")
