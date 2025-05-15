@@ -28,76 +28,65 @@ def save_db(path, data):
         json.dump(data, f, indent=2)
 
 # ----- Page Config -----
-st.set_page_config(page_title="TaskBid — Micro Task Platform", layout="centered", page_icon="🚀")
+st.set_page_config(
+    page_title="TaskBid — Micro Task Platform",
+    layout="wide",
+    page_icon="🚀"
+)
 
-# ----- Custom Style -----
+# ----- Light Theme Style -----
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-
+        
         html, body, [class*="css"] {
-            font-family: 'Poppins', sans-serif !important;
-        }
-        .main {
-            background: radial-gradient(circle at top left, #1a002d 0%, #000000 100%) !important;
-            padding: 3rem 5rem;
-        }
-        section[data-testid="stSidebar"] {
-            background-color: #13001a;
-            color: #eee;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9ff;
+            color: #222;
         }
         .stButton>button {
-            background: linear-gradient(90deg, #6f00ff, #bb86fc);
+            background: linear-gradient(90deg, #6200ea, #9c27b0);
             color: white;
-            padding: 0.8rem 2rem;
-            border-radius: 10px;
-            font-weight: bold;
+            padding: 0.6rem 1.5rem;
             border: none;
-            box-shadow: 0 4px 12px rgba(187,134,252,0.3);
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
         }
         .stButton>button:hover {
-            background: linear-gradient(90deg, #8e24aa, #ce93d8);
-            box-shadow: 0 6px 18px rgba(206,147,216,0.5);
+            background: linear-gradient(90deg, #7b1fa2, #ba68c8);
         }
         input, textarea {
-            background-color: #1f1f2e !important;
-            color: #fff !important;
-            border-radius: 10px !important;
-            border: 1.5px solid #6f00ff !important;
-            padding: 0.75rem !important;
+            background-color: #ffffff !important;
+            color: #000 !important;
+            border: 1px solid #ccc !important;
+            border-radius: 8px !important;
+            padding: 0.5rem !important;
             font-size: 1rem !important;
         }
         .task-card {
-            background: #1b0033;
-            border: 1px solid #6f00ff;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 14px rgba(111, 0, 255, 0.2);
-            transition: transform 0.3s ease;
-        }
-        .task-card:hover {
-            transform: translateY(-5px);
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         h1, h2, h3, h4 {
-            color: #f0d9ff;
+            color: #333;
         }
         .stExpander>button {
-            background: #37005a;
-            color: white;
-            border-radius: 10px;
-            font-weight: 600;
-        }
-        .stExpander>button:hover {
-            background: #5c00a3;
+            background: #eeeeff;
+            color: #333;
+            border-radius: 8px;
         }
     </style>
 """, unsafe_allow_html=True)
 
 # ----- App Content -----
 st.image("static/logo.png", width=120)
-st.title(":rocket: Welcome to TaskBid — Micro Task Platform")
+st.title("🚀 Welcome to TaskBid — Micro Task Platform")
 
 if "user" not in st.session_state:
     st.session_state.user = None
@@ -113,7 +102,7 @@ elif choice == "Signup":
 
 elif choice == "Logout":
     st.session_state.user = None
-    st.success("🔐 Logged out successfully.")
+    st.success("🔒 Logged out successfully.")
 
 elif choice == "Dashboard":
     user = st.session_state.user
@@ -146,8 +135,8 @@ elif choice == "Dashboard":
 
         st.markdown("### ➕ Post a New Task")
         title = st.text_input("📝 Task Title")
-        desc = st.text_area("🧞 Description")
-        price = st.number_input("Price ($)", min_value=5.0, step=1.0)
+        desc = st.text_area("🧾 Description")
+        price = st.number_input("💲 Price", min_value=1, value=10)
         if st.button("📤 Post Task"):
             new_task = Task(title, desc, user['username'], price)
             tasks.append(new_task.to_dict())
@@ -159,8 +148,8 @@ elif choice == "Dashboard":
         open_tasks = [t for t in tasks if t['status'] == 'open']
         for t in open_tasks:
             with st.expander(f"💼 {t['title']} — ${t['price']}"):
-                st.markdown(f"🧞 {t['description']}")
-                msg = st.text_input(f"✍️ Bid Message for '{t['title']}'", key=t['title'])
+                st.markdown(f"🧾 {t['description']}")
+                msg = st.text_input(f"✏️ Bid Message for '{t['title']}'", key=t['title'])
                 if st.button("📨 Submit Bid", key=f"{t['title']}_bid"):
                     new_bid = Bid(t['title'], user['username'], msg)
                     bids.append(new_bid.to_dict())
