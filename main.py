@@ -21,11 +21,9 @@ def load_db(path):
         with open(path, 'r') as f:
             return json.load(f)
     except json.JSONDecodeError:
-        # Corrupted or malformed JSON, reset file
         with open(path, 'w') as f:
             json.dump([], f)
         return []
-
 
 def save_db(path, data):
     with open(path, 'w') as f:
@@ -36,36 +34,56 @@ st.set_page_config(page_title="TaskBid", layout="wide")
 
 st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Montserrat:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-        html, body, [class*="css"]  {
-            background-color: #1c1c1e;
+        /* Entire app background */
+        .appview-container .main {
+            background-color: #000000 !important;
+        }
+
+        /* Main content area */
+        .block-container {
+            background-color: #000000 !important;
             color: #ffffff;
-            font-family: 'Poppins', 'Montserrat', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
-        .stButton>button {
-            background: linear-gradient(90deg, #4B0082, #A64AC9);
-            color: white;
-            font-weight: 600;
-            border: none;
-            padding: 0.5rem 1.2rem;
-            border-radius: 8px;
+        /* Sidebar */
+        section[data-testid="stSidebar"] {
+            background-color: #111111 !important;
         }
 
-        .stTextInput>div>div>input,
+        /* Inputs */
+        .stTextInput > div > div > input,
         .stTextArea textarea {
-            background-color: #2c2c2e;
-            color: white;
+            background-color: #1a1a1a !important;
+            color: white !important;
             border-radius: 8px;
         }
 
+        /* Buttons */
+        .stButton > button {
+            background-color: #4B0082 !important;
+            color: white !important;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 0.6rem 1.4rem;
+            border: none;
+        }
+
+        /* Expander content */
+        .stExpanderContent {
+            background-color: #1a1a1a !important;
+            color: white !important;
+        }
+
+        /* Task card styling */
         .task-card {
-            background-color: #2c2c2e;
+            background-color: #1c1c1c;
             padding: 1.2rem;
             margin-bottom: 1rem;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(166, 74, 201, 0.2);
+            box-shadow: 0 4px 12px rgba(75, 0, 130, 0.3);
         }
     </style>
 """, unsafe_allow_html=True)
@@ -120,8 +138,10 @@ elif choice == "Dashboard":
         st.markdown("### ➕ Post a New Task")
         title = st.text_input("📝 Task Title")
         desc = st.text_area("🧾 Description")
+        price = st.number_input("💲 Price", min_value=5.0, step=1.0)
+
         if st.button("📤 Post Task"):
-            new_task = Task(title, desc, user['username'])
+            new_task = Task(title, desc, user['username'], price)
             tasks.append(new_task.to_dict())
             save_db(TASK_DB, tasks)
             st.success("✅ Task Posted!")
@@ -143,4 +163,3 @@ elif choice == "Dashboard":
         my_bids = [b for b in bids if b['seller'] == user['username']]
         for b in my_bids:
             st.markdown(f"- **Task:** {b['task']} | 💬 **Message:** {b['message']}")
-
