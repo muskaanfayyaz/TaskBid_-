@@ -166,8 +166,8 @@ elif choice == "Dashboard":
                 with col2:
                     if st.button(f"💳 Pay with Stripe", key=f"pay_{t['title']}_{b['seller']}"):
                         try:
-                            success_url = "https://your-app/success"
-                            cancel_url = "https://your-app/cancel"
+                            success_url = "https://mf-taskb.streamlit.app/success"
+                            cancel_url = "https://mf-taskb.streamlit.app/cancel"
                             session_url = create_checkout_session(
                                 task_title=t['title'],
                                 amount=t['price'],
