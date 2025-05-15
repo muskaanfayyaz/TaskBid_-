@@ -28,9 +28,9 @@ def save_db(path, data):
         json.dump(data, f, indent=2)
 
 # ----- Page Config -----
-st.set_page_config(page_title="TaskBid — Micro Task Platform", layout="wide", page_icon="🚀")
+st.set_page_config(page_title="TaskBid — Micro Task Platform", layout="centered", page_icon="🚀")
 
-# ----- Global Style -----
+# ----- Custom Style -----
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
@@ -97,7 +97,7 @@ st.markdown("""
 
 # ----- App Content -----
 st.image("static/logo.png", width=120)
-st.title("🚀 Welcome to TaskBid — Micro Task Platform")
+st.title(":rocket: Welcome to TaskBid — Micro Task Platform")
 
 if "user" not in st.session_state:
     st.session_state.user = None
@@ -113,7 +113,7 @@ elif choice == "Signup":
 
 elif choice == "Logout":
     st.session_state.user = None
-    st.success("🔒 Logged out successfully.")
+    st.success("🔐 Logged out successfully.")
 
 elif choice == "Dashboard":
     user = st.session_state.user
@@ -146,9 +146,10 @@ elif choice == "Dashboard":
 
         st.markdown("### ➕ Post a New Task")
         title = st.text_input("📝 Task Title")
-        desc = st.text_area("🧾 Description")
+        desc = st.text_area("🧞 Description")
+        price = st.number_input("Price ($)", min_value=5.0, step=1.0)
         if st.button("📤 Post Task"):
-            new_task = Task(title, desc, user['username'])
+            new_task = Task(title, desc, user['username'], price)
             tasks.append(new_task.to_dict())
             save_db(TASK_DB, tasks)
             st.success("✅ Task Posted!")
@@ -158,8 +159,8 @@ elif choice == "Dashboard":
         open_tasks = [t for t in tasks if t['status'] == 'open']
         for t in open_tasks:
             with st.expander(f"💼 {t['title']} — ${t['price']}"):
-                st.markdown(f"🧾 {t['description']}")
-                msg = st.text_input(f"✏️ Bid Message for '{t['title']}'", key=t['title'])
+                st.markdown(f"🧞 {t['description']}")
+                msg = st.text_input(f"✍️ Bid Message for '{t['title']}'", key=t['title'])
                 if st.button("📨 Submit Bid", key=f"{t['title']}_bid"):
                     new_bid = Bid(t['title'], user['username'], msg)
                     bids.append(new_bid.to_dict())
