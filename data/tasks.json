@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "title": "Design a logo",
+    "description": "use bright colors brand name taste heaven",
+    "buyer": "Muskaan",
+    "price": 10,
+    "status": "assigned"
+  },
+  {
+    "title": "Design a card",
+    "description": "use bright colors brand name core",
+    "buyer": "Muskaan",
+    "price": 11,
+    "status": "assigned"
+  },
+  {
+    "title": "generate a ecommerce website",
+    "description": "rent a car websit",
+    "buyer": "test",
+    "price": 15,
+    "status": "open"
+  }
+]

@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "username": "Muskaan",
+    "email": "muskaanfayyaz3@gmail.com",
+    "role": "buyer",
+    "password": "muskaan"
+  },
+  {
+    "username": "test",
+    "email": "test@gmail.com",
+    "role": "seller",
+    "password": "test123"
+  }
+]

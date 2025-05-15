@@ -3,7 +3,9 @@ from models.user import User
 from models.task import Task
 from models.bid import Bid
 from utils.auth import login, signup
-import json, os
+from utils.stripe_utils import create_checkout_session
+import json
+import os
 
 # Simulated DB paths
 USER_DB = "data/users.json"
@@ -57,14 +59,13 @@ st.markdown("""
             background: linear-gradient(90deg, #ba68c8, #7e57c2);
         }
         input, textarea {
-    background-color: #f0f0f0 !important; /* Light background */
-    color: #000 !important;              /* Dark text */
-    border: 1px solid #ccc !important;
-    border-radius: 8px !important;
-    padding: 0.5rem !important;
-    font-size: 1rem !important;
-}
-
+            background-color: #f0f0f0 !important;
+            color: #000 !important;
+            border: 1px solid #ccc !important;
+            border-radius: 8px !important;
+            padding: 0.5rem !important;
+            font-size: 1rem !important;
+        }
         .task-card {
             background: #f0f0f0;
             border: 1px solid #333;
@@ -164,11 +165,19 @@ elif choice == "Dashboard":
                         st.success("🎉 Bid Accepted! Task Assigned.")
                 with col2:
                     if st.button(f"💳 Pay with Stripe", key=f"pay_{t['title']}_{b['seller']}"):
-                        st.info("🔐 Stripe payment would be processed here.")
-                        # NOTE: Replace below with actual secure backend logic to create a Stripe session
-                        # Example:
-                        # session = create_stripe_checkout_session(task=t, buyer=user, seller=b['seller'])
-                        # st.markdown(f"[🔗 Pay Now]({session.url})")
+                        try:
+                            success_url = "https://your-app/success"
+                            cancel_url = "https://your-app/cancel"
+                            session_url = create_checkout_session(
+                                task_title=t['title'],
+                                amount=t['price'],
+                                success_url=success_url,
+                                cancel_url=cancel_url
+                            )
+                            st.success("✅ Stripe session created successfully!")
+                            st.markdown(f"[🔗 Pay Now]({session_url})", unsafe_allow_html=True)
+                        except Exception as e:
+                            st.error(f"❌ Failed to create Stripe session: {str(e)}")
 
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -176,5 +185,3 @@ elif choice == "Dashboard":
     my_bids = [b for b in bids if b['seller'] == user['username']]
     for b in my_bids:
         st.markdown(f"- **Task:** {b['task']} | 💬 **Message:** {b['message']}")
-
-# 🔒 Note: Stripe integration should happen on a backend server for security.
